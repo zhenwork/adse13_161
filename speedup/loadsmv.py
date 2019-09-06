@@ -1,3 +1,5 @@
+import re
+
 def loadsmv(fname):
     ## \nSIZE1=1739;\nSIZE2=1748
     f = open(fname,"rb")
