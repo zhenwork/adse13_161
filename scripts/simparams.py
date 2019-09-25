@@ -2,7 +2,7 @@ import os
 
 ## system params
 #DEVICES_PER_NODE
-quick = True                         ##################
+quick = True                          ##################
 
 
 ## nanoBragg params
@@ -18,7 +18,7 @@ mosaic_spread_deg = 0.05
 mosaic_domains = 25 
 length_um = 4.
 Deff_A = 4000
-k_sol = 0.435
+k_sol = 1.0 #0.435
 
 
 ## background params
@@ -54,7 +54,7 @@ detector_psf_fwhm_mm = 0.08
 ## user params
 prefix = "lao"                                                                                   ##################
 pdb_files = [ os.path.abspath( "./PDBs/lao_"+str(ii).zfill(3)+".pdb" ) for ii in range(2) ]      ##################
-num_img = [3] * len(pdb_files)                                                                   ##################
+num_img = [2] * len(pdb_files)                                                                   ##################
 
 
 

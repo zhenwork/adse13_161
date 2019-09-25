@@ -118,10 +118,10 @@ def run_sim2smv(simparams=None,pdb_lines=None,crystal=None,spectra=None,rotation
     # print("## pdb_lines[100] = ", pdb_lines[100:110])
     GF = gen_fmodel(resolution=simparams.direct_algo_res_limit,pdb_text=pdb_lines,algorithm=simparams.fmodel_algorithm,wavelength=real_wavelength_A)
     GF.set_k_sol(simparams.k_sol)
-    print("## before P1 primitive: ", GF.get_amplitudes())
+    # print("## before  primitive: ", GF.get_amplitudes())
     GF.make_P1_primitive()
     sfall_main = GF.get_amplitudes()
-    print("## after P1 primitive: ", GF.get_amplitudes())
+    # print("## after  primitive: ", GF.get_amplitudes())
 
     # use crystal structure to initialize Fhkl array
     sfall_main.show_summary(prefix = "Amplitudes used ")
