@@ -314,7 +314,7 @@ if __name__=="__main__":
     for idx_pdb in range( len(simparams.pdb_files) ):
 
         fpdb = simparams.pdb_files[idx_pdb]
-
+        print(rank, " ## preparing sfall for: ", fpdb)
         sfall_cluster = None
         sfall_cluster = sfall_prepare(simparams=simparams, fpdb=fpdb, spectra = transmitted_info["spectra"])
         pdb_lines = None

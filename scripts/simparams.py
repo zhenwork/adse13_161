@@ -2,7 +2,7 @@ import os
 
 ## system params
 #DEVICES_PER_NODE
-quick = False                         ##################
+quick = True                         ##################
 
 
 ## nanoBragg params
