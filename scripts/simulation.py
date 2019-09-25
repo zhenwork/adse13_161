@@ -109,18 +109,18 @@ def run_sim2smv(simparams=None,pdb_lines=None,crystal=None,spectra=None,rotation
     wavlen, flux, real_wavelength_A = next(spectra) # list of lambdas, list of fluxes, average wavelength
     real_flux = flex.sum(flux)
     assert real_wavelength_A > 0
-    # print(rank, " ## real_wavelength_A/real_flux = ", real_wavelength_A, real_flux*1.0/simparams.flux)
+    print(rank, " ## real_wavelength_A/real_flux = ", real_wavelength_A, real_flux*1.0/simparams.flux)
 
     if quick:
         wavlen = flex.double([real_wavelength_A])
         flux = flex.double([real_flux])
 
     # print("## pdb_lines[100] = ", pdb_lines[100:110])
-    GF = gen_fmodel(resolution=simparams.direct_algo_res_limit,pdb_text=pdb_lines,algorithm=simparams.fmodel_algorithm,wavelength=real_wavelength_A)
-    GF.set_k_sol(simparams.k_sol)
+    # GF = gen_fmodel(resolution=simparams.direct_algo_res_limit,pdb_text=pdb_lines,algorithm=simparams.fmodel_algorithm,wavelength=real_wavelength_A)
+    # GF.set_k_sol(simparams.k_sol)
     # print("## before  primitive: ", GF.get_amplitudes())
-    GF.make_P1_primitive()
-    sfall_main = GF.get_amplitudes()
+    # GF.make_P1_primitive()
+    sfall_main = sfall_cluster["main"] #GF.get_amplitudes()
     # print("## after  primitive: ", GF.get_amplitudes())
 
     # use crystal structure to initialize Fhkl array
@@ -194,14 +194,14 @@ def run_sim2smv(simparams=None,pdb_lines=None,crystal=None,spectra=None,rotation
     SIM.beam_center_mm=(simparams.beam_center_x_mm, simparams.beam_center_y_mm)  # 95.975 96.855
     ######################
 
-    # print("## domains_per_crystal = ", crystal.domains_per_crystal)
+    print("## domains_per_crystal = ", crystal.domains_per_crystal)
     SIM.raw_pixels *= crystal.domains_per_crystal # must calculate the correct scale!
 
     # print("## Initial raw_pixels = ", flex.sum(SIM.raw_pixels))
 
     for x in range(len(flux)):
         # CH = channel_pixels(wavlen[x],flux[x],N,UMAT_nm,Amatrix_rot,sfall_cluster[x],rank)
-        # print("## in loop wavlen/flux/real_wavelength_A = ", wavlen[x], flux[x]/real_flux, real_wavelength_A)
+        print("## in loop wavlen/flux/real_wavelength_A = ", wavlen[x], flux[x]/real_flux, real_wavelength_A)
         CH = channel_pixels(simparams=simparams,single_wavelength_A=wavlen[x],single_flux=flux[x],N=N,UMAT_nm=UMAT_nm, \
                 Amatrix_rot=Amatrix_rot,sfall_channel=sfall_cluster[x],rank=rank)
         SIM.raw_pixels += CH.raw_pixels * crystal.domains_per_crystal
@@ -253,6 +253,8 @@ def sfall_prepare(simparams=None, fpdb=None, spectra=None):
                     pdb_text=data(fpdb).get("pdb_lines"), algorithm=simparams.fmodel_algorithm, wavelength=simparams.wavelength_A)
     fmodel_generator.set_k_sol(simparams.k_sol)
     fmodel_generator.make_P1_primitive()
+
+    sfall_cluster["main"] = fmodel_generator.get_amplitudes().copy()
 
     if simparams.quick:
         sfall_cluster[0] = fmodel_generator.get_amplitudes().copy()
