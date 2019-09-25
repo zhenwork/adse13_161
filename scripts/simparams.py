@@ -53,7 +53,7 @@ detector_psf_fwhm_mm = 0.08
 
 ## user params
 prefix = "lao"                                                                                   ##################
-pdb_files = [ os.path.abspath("./PDBs/"+fname) for fname in sorted(os.listdir("./PDBs/")) ]      ##################
+pdb_files = [ os.path.abspath( "./PDBs/lao_"+str(ii).zfill(3)+".pdb" ) for ii in range(2) ]      ##################
 num_img = [3] * len(pdb_files)                                                                   ##################
 
 

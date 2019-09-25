@@ -118,8 +118,10 @@ def run_sim2smv(simparams=None,pdb_lines=None,crystal=None,spectra=None,rotation
     # print("## pdb_lines[100] = ", pdb_lines[100:110])
     GF = gen_fmodel(resolution=simparams.direct_algo_res_limit,pdb_text=pdb_lines,algorithm=simparams.fmodel_algorithm,wavelength=real_wavelength_A)
     GF.set_k_sol(simparams.k_sol)
-    #GF.make_P1_primitive()
+    print("## before P1 primitive: ", flex.sum(GF.get_amplitudes()))
+    GF.make_P1_primitive()
     sfall_main = GF.get_amplitudes()
+    print("## after P1 primitive: ", flex.sum(GF.get_amplitudes()))
 
     # use crystal structure to initialize Fhkl array
     sfall_main.show_summary(prefix = "Amplitudes used ")
@@ -250,7 +252,7 @@ def sfall_prepare(simparams=None, fpdb=None, spectra=None):
     fmodel_generator = gen_fmodel(resolution=simparams.direct_algo_res_limit,\
                     pdb_text=data(fpdb).get("pdb_lines"), algorithm=simparams.fmodel_algorithm, wavelength=simparams.wavelength_A)
     fmodel_generator.set_k_sol(simparams.k_sol)
-    #fmodel_generator.make_P1_primitive()
+    fmodel_generator.make_P1_primitive()
 
     if simparams.quick:
         sfall_cluster[0] = fmodel_generator.get_amplitudes().copy()
