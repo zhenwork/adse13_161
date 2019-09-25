@@ -17,7 +17,7 @@ default_F = 0
 mosaic_spread_deg = 0.05
 mosaic_domains = 25 
 length_um = 4.
-Deff_A = 4000
+Deff_A = 500 #4000
 k_sol = 1.0 #0.435
 
 
