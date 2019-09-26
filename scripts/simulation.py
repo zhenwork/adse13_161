@@ -170,6 +170,7 @@ def run_sim2smv(simparams=None,pdb_lines=None,crystal=None,spectra=None,rotation
 
     SIM.Amatrix_RUB = Amatrix_rot
     #workaround for failing init_cell, use custom written Amatrix setter
+    print("## inside run_sim2smv, Amat_rot = ", Amatrix_rot)
     
     Amat = sqr(SIM.Amatrix).transpose() # recovered Amatrix from SIM
     
@@ -201,7 +202,7 @@ def run_sim2smv(simparams=None,pdb_lines=None,crystal=None,spectra=None,rotation
 
     for x in range(len(flux)):
         # CH = channel_pixels(wavlen[x],flux[x],N,UMAT_nm,Amatrix_rot,sfall_cluster[x],rank)
-        print("## in loop wavlen/flux/real_wavelength_A = ", wavlen[x], flux[x]/real_flux, real_wavelength_A)
+        # print("## in loop wavlen/flux/real_wavelength_A = ", wavlen[x], flux[x]/real_flux, real_wavelength_A)
         CH = channel_pixels(simparams=simparams,single_wavelength_A=wavlen[x],single_flux=flux[x],N=N,UMAT_nm=UMAT_nm, \
                 Amatrix_rot=Amatrix_rot,sfall_channel=sfall_cluster[x],rank=rank)
         SIM.raw_pixels += CH.raw_pixels * crystal.domains_per_crystal

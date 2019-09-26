@@ -17,7 +17,7 @@ default_F = 0
 mosaic_spread_deg = 0.05
 mosaic_domains = 25 
 length_um = 10.
-Deff_A = 4000
+Deff_A = 1000
 k_sol = 0.435
 
 
@@ -55,10 +55,6 @@ detector_psf_fwhm_mm = 0.08
 prefix = "lao"                                                                                   ##################
 pdb_files = [ os.path.abspath( "./PDBs/lao_"+str(ii).zfill(3)+".pdb" ) for ii in range(2) ]      ##################
 num_img = [5] * len(pdb_files)                                                                   ##################
-
-
-
-
 
 
 
