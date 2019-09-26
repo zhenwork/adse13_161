@@ -80,6 +80,7 @@ def channel_pixels(simparams=None,single_wavelength_A=None,single_flux=None,N=No
     SIM.beam_center_mm=(simparams.beam_center_x_mm, simparams.beam_center_y_mm)  # 95.975 96.855
     ######################
 
+    SIM.show_params()
 
     add_spots_algorithm = simparams.add_spots_algorithm
 
@@ -124,7 +125,7 @@ def run_sim2smv(simparams=None,pdb_lines=None,crystal=None,spectra=None,rotation
     # print("## after  primitive: ", GF.get_amplitudes())
 
     # use crystal structure to initialize Fhkl array
-    sfall_main.show_summary(prefix = "Amplitudes used ")
+    # sfall_main.show_summary(prefix = "Amplitudes used ")
     N = crystal.number_of_cells(sfall_main.unit_cell())
 
     #print("## number of N = ", N)
@@ -170,7 +171,7 @@ def run_sim2smv(simparams=None,pdb_lines=None,crystal=None,spectra=None,rotation
 
     SIM.Amatrix_RUB = Amatrix_rot
     #workaround for failing init_cell, use custom written Amatrix setter
-    print("## inside run_sim2smv, Amat_rot = ", Amatrix_rot)
+    # print("## inside run_sim2smv, Amat_rot = ", Amatrix_rot)
     
     Amat = sqr(SIM.Amatrix).transpose() # recovered Amatrix from SIM
     
