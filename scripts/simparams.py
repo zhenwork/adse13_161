@@ -43,8 +43,8 @@ flux = 5.0e11/50.0e-15
 ## device params
 detector_size_nx = 1739
 detector_size_ny = 1748
-beam_center_x_mm = 20 # 95.975
-beam_center_y_mm = 50 # 96.855
+beam_center_x_mm = 95.975
+beam_center_y_mm = 96.855
 pixel_size_mm = 0.11
 distance_mm = 138.695
 detector_psf_kernel_radius_pixels = 1
