@@ -17,7 +17,7 @@ default_F = 0
 mosaic_spread_deg = 0.05
 mosaic_domains = 25 
 length_um = 10.
-Deff_A = 2000
+Deff_A = 1500
 k_sol = 0.435
 
 
@@ -33,8 +33,8 @@ air_molecular_weight_Da = 28
 ## x-ray beam params
 beam_diameter_um = 3.0 # 1.0
 polarization = 1
-wavelength_A = 0.977
-energy_eV = 12690.348
+wavelength_A = 0.9771
+energy_eV = 12688.890590
 exposure_s = 50.0e-15
 beamsize_mm = 3.0e-3
 flux = 5.0e11/50.0e-15
@@ -43,8 +43,8 @@ flux = 5.0e11/50.0e-15
 ## device params
 detector_size_nx = 1739
 detector_size_ny = 1748
-beam_center_x_mm = 95.975
-beam_center_y_mm = 96.855
+beam_center_x_mm = 20 # 95.975
+beam_center_y_mm = 50 # 96.855
 pixel_size_mm = 0.11
 distance_mm = 138.695
 detector_psf_kernel_radius_pixels = 1

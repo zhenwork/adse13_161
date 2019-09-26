@@ -80,9 +80,7 @@ def channel_pixels(simparams=None,single_wavelength_A=None,single_flux=None,N=No
     temp=SIM.Ncells_abc
     SIM.Ncells_abc=temp
 
-
-
-    SIM.show_params()
+    # SIM.show_params()
 
     add_spots_algorithm = simparams.add_spots_algorithm
 
@@ -241,7 +239,7 @@ def run_sim2smv(simparams=None,pdb_lines=None,crystal=None,spectra=None,rotation
     SIM.detector_psf_kernel_radius_pixels=simparams.detector_psf_kernel_radius_pixels
     SIM.detector_psf_type=shapetype.Unknown # for CSPAD
     SIM.detector_psf_fwhm_mm=simparams.detector_psf_fwhm_mm
-    #SIM.apply_psf()
+    SIM.apply_psf()
 
     SIM.add_noise() 
 
@@ -303,7 +301,7 @@ if __name__=="__main__":
         for iteration in range( sum(simparams.num_img) ):
             random_orientations.append( mt.random_double_r3_rotation_matrix() )
         
-        for ii in range(10): print("## TOP 10 orientations = ", random_orientations[ii])
+        # for ii in range(10): print("## TOP 10 orientations = ", random_orientations[ii])
         print("## total orientations = ", len(random_orientations))
         transmitted_info = dict(spectra = SS, crystal = C, random_orientations = random_orientations)
 
