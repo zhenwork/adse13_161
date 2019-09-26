@@ -57,6 +57,11 @@ def channel_pixels(simparams=None,single_wavelength_A=None,single_flux=None,N=No
     SIM.distance_mm=simparams.distance_mm
     SIM.set_mosaic_blocks(UMAT_nm)
 
+    ######################
+    SIM.beamcenter_convention=convention.ADXV
+    SIM.beam_center_mm=(simparams.beam_center_x_mm, simparams.beam_center_y_mm)  # 95.975 96.855
+    ######################
+
     # get same noise each time this test is run
     SIM.seed = 0
     SIM.oversample=simparams.oversample
@@ -75,10 +80,7 @@ def channel_pixels(simparams=None,single_wavelength_A=None,single_flux=None,N=No
     temp=SIM.Ncells_abc
     SIM.Ncells_abc=temp
 
-    ######################
-    SIM.beamcenter_convention=convention.ADXV
-    SIM.beam_center_mm=(simparams.beam_center_x_mm, simparams.beam_center_y_mm)  # 95.975 96.855
-    ######################
+
 
     SIM.show_params()
 
@@ -155,6 +157,10 @@ def run_sim2smv(simparams=None,pdb_lines=None,crystal=None,spectra=None,rotation
         UMAT_nm.append( site.axis_and_angle_as_r3_rotation_matrix(m,deg=False) )
     SIM.set_mosaic_blocks(UMAT_nm)
 
+    ######################
+    SIM.beamcenter_convention=convention.ADXV
+    SIM.beam_center_mm=(simparams.beam_center_x_mm, simparams.beam_center_y_mm)  # 95.975 96.855
+    ######################
 
     # get same noise each time this test is run
     SIM.seed = 0
@@ -191,10 +197,7 @@ def run_sim2smv(simparams=None,pdb_lines=None,crystal=None,spectra=None,rotation
     temp=SIM.Ncells_abc
     SIM.Ncells_abc=temp
     
-    ######################
-    SIM.beamcenter_convention=convention.ADXV
-    SIM.beam_center_mm=(simparams.beam_center_x_mm, simparams.beam_center_y_mm)  # 95.975 96.855
-    ######################
+
 
     print("## domains_per_crystal = ", crystal.domains_per_crystal)
     SIM.raw_pixels *= crystal.domains_per_crystal # must calculate the correct scale!
@@ -352,8 +355,8 @@ if __name__=="__main__":
 
                 random_orientation=transmitted_info["random_orientations"][idx_img_all]
                 rand_ori = sqr(random_orientation)
-                print("## rank ", rank, " ## random orientations = ", random_orientation)
-                #print(rank, " ## random ori = ", rand_ori)
+                # print("## rank ", rank, " ## random orientations = ", random_orientation)
+                # print(rank, " ## random ori = ", rand_ori)
                 run_sim2smv(simparams=simparams,pdb_lines=pdb_lines,crystal=transmitted_info["crystal"],\
                         spectra=iterator,rotation=rand_ori,rank=rank,fsave=fsave,sfall_cluster=sfall_cluster,quick=simparams.quick)
                 #run_sim2smv(prefix=simparams.prefix, crystal=transmitted_info["crystal"],spectra=iterator,rotation=rand_ori,\

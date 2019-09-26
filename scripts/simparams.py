@@ -48,13 +48,14 @@ beam_center_y_mm = 96.855
 pixel_size_mm = 0.11
 distance_mm = 138.695
 detector_psf_kernel_radius_pixels = 1
-detector_psf_fwhm_mm = 0.08
+detector_psf_fwhm_mm = 0.11
 
 
 ## user params
-prefix = "lao"                                                                                   ##################
-pdb_files = [ os.path.abspath( "./PDBs/lao_"+str(ii).zfill(3)+".pdb" ) for ii in range(2) ]      ##################
-num_img = [5] * len(pdb_files)                                                                   ##################
+prefix = "lao"            
+num_pdbs = 2                                                                                         ##################
+pdb_files = [ os.path.abspath( "./PDBs/lao_"+str(ii).zfill(3)+".pdb" ) for ii in range(num_pdbs) ]   ##################
+num_img = [5] * len(pdb_files)                                                                       ##################
 
 
 
