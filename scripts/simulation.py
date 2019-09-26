@@ -109,7 +109,7 @@ def run_sim2smv(simparams=None,pdb_lines=None,crystal=None,spectra=None,rotation
     wavlen, flux, real_wavelength_A = next(spectra) # list of lambdas, list of fluxes, average wavelength
     real_flux = flex.sum(flux)
     assert real_wavelength_A > 0
-    print(rank, " ## real_wavelength_A/real_flux = ", real_wavelength_A, real_flux*1.0/simparams.flux)
+    # print(rank, " ## real_wavelength_A/real_flux = ", real_wavelength_A, real_flux*1.0/simparams.flux)
 
     if quick:
         wavlen = flex.double([real_wavelength_A])
@@ -297,7 +297,8 @@ if __name__=="__main__":
         random_orientations = []
         for iteration in range( sum(simparams.num_img) ):
             random_orientations.append( mt.random_double_r3_rotation_matrix() )
-            
+        
+        for ii in range(10): print("## TOP 10 orientations = ", random_orientations[ii])
         print("## total orientations = ", len(random_orientations))
         transmitted_info = dict(spectra = SS, crystal = C, random_orientations = random_orientations)
 
@@ -349,7 +350,7 @@ if __name__=="__main__":
 
                 random_orientation=transmitted_info["random_orientations"][idx_img_all]
                 rand_ori = sqr(random_orientation)
-                #print(rank, " ## random orientations = ", random_orientation)
+                print("## rank ", rank, " ## random orientations = ", random_orientation)
                 #print(rank, " ## random ori = ", rand_ori)
                 run_sim2smv(simparams=simparams,pdb_lines=pdb_lines,crystal=transmitted_info["crystal"],\
                         spectra=iterator,rotation=rand_ori,rank=rank,fsave=fsave,sfall_cluster=sfall_cluster,quick=simparams.quick)

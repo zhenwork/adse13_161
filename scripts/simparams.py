@@ -16,9 +16,9 @@ default_F = 0
 ## crystal params
 mosaic_spread_deg = 0.05
 mosaic_domains = 25 
-length_um = 4.
-Deff_A = 1000 #4000
-k_sol = 1.0 #0.435
+length_um = 10.
+Deff_A = 4000
+k_sol = 0.435
 
 
 ## background params
@@ -31,7 +31,7 @@ air_molecular_weight_Da = 28
 
 
 ## x-ray beam params
-beam_diameter_um = 1.0
+beam_diameter_um = 3.0 # 1.0
 polarization = 1
 wavelength_A = 0.977
 energy_eV = 12690.348
@@ -54,7 +54,7 @@ detector_psf_fwhm_mm = 0.08
 ## user params
 prefix = "lao"                                                                                   ##################
 pdb_files = [ os.path.abspath( "./PDBs/lao_"+str(ii).zfill(3)+".pdb" ) for ii in range(2) ]      ##################
-num_img = [2] * len(pdb_files)                                                                   ##################
+num_img = [5] * len(pdb_files)                                                                   ##################
 
 
 
