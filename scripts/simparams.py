@@ -2,7 +2,7 @@ import os
 
 ## system params
 #DEVICES_PER_NODE
-quick = True                          ##################
+quick = False                         ##################
 
 
 ## nanoBragg params
@@ -53,9 +53,9 @@ detector_psf_fwhm_mm = 0.11
 
 ## user params
 prefix = "lao"            
-num_pdbs = 2                                                                                         ##################
+num_pdbs = 1                                                                                         ##################
 pdb_files = [ os.path.abspath( "./PDBs/lao_"+str(ii).zfill(3)+".pdb" ) for ii in range(num_pdbs) ]   ##################
-num_img = [1] * len(pdb_files)                                                                       ##################
+num_img = [20] * len(pdb_files)                                                                       ##################
 
 
 

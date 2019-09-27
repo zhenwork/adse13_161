@@ -44,7 +44,7 @@ def data(fpdb):
 def channel_pixels(simparams=None,single_wavelength_A=None,single_flux=None,N=None,UMAT_nm=None, \
                 Amatrix_rot=None,sfall_channel=None,rank=None):
     
-    #print("## inside channel wavlength/flux = ", single_wavelength_A, single_flux/simparams.flux)
+    print("## inside channel wavlength/flux = ", single_wavelength_A, single_flux/simparams.flux)
 
     SIM = nanoBragg(detpixels_slowfast=(simparams.detector_size_ny,simparams.detector_size_nx),pixel_size_mm=simparams.pixel_size_mm,\
                 Ncells_abc=(N,N,N),wavelength_A=single_wavelength_A,verbose=0)
