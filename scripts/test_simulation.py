@@ -35,6 +35,7 @@ from cctbx import crystal_orientation
 
 
 #################################
+simparams.prefix = "test_lao"     
 simparams.num_pdbs = 1     
 simparams.pdb_files = simparams.pdb_files[:1] 
 simparams.num_img = [100] 
