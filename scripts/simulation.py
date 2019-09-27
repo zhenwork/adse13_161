@@ -44,7 +44,7 @@ def data(fpdb):
 def channel_pixels(simparams=None,single_wavelength_A=None,single_flux=None,N=None,UMAT_nm=None, \
                 Amatrix_rot=None,sfall_channel=None,rank=None):
     
-    print("## inside channel wavlength/flux = ", single_wavelength_A, single_flux/simparams.flux)
+    # print("## inside channel wavlength/flux = ", single_wavelength_A, single_flux/simparams.flux)
 
     SIM = nanoBragg(detpixels_slowfast=(simparams.detector_size_ny,simparams.detector_size_nx),pixel_size_mm=simparams.pixel_size_mm,\
                 Ncells_abc=(N,N,N),wavelength_A=single_wavelength_A,verbose=0)
@@ -100,7 +100,7 @@ def channel_pixels(simparams=None,single_wavelength_A=None,single_flux=None,N=No
 from LS49.sim.debug_utils import channel_extractor
 CHDBG_singleton = channel_extractor()
 
-def run_sim2smv(simparams=None,pdb_lines=None,crystal=None,spectra=None,rotation=None,rank=None,fsave=None,sfall_cluster=None,quick=False):
+def run_sim2smv(img_prefix=None, simparams=None,pdb_lines=None,crystal=None,spectra=None,rotation=None,rank=None,fsave=None,sfall_cluster=None,quick=False):
     smv_fileout = fsave
 
     direct_algo_res_limit = simparams.direct_algo_res_limit
@@ -236,7 +236,7 @@ def run_sim2smv(simparams=None,pdb_lines=None,crystal=None,spectra=None,rotation
 
     SIM.add_noise() 
 
-    extra = "PREFIX=%s;\nRANK=%d;\n"%(simparams.prefix,rank)
+    extra = "PREFIX=%s;\nRANK=%d;\n"%(img_prefix,rank)
     SIM.to_smv_format_py(fileout=smv_fileout,intfile_scale=1,rotmat=True,extra=extra,gz=True)
     SIM.free_all()
 
@@ -322,7 +322,7 @@ if __name__=="__main__":
         pdb_lines = data(fpdb).get("pdb_lines")
         save_folder = "./" + simparams.prefix + "_" + str(idx_pdb).zfill(3)
 
-        print("## rank ", rank, " ## is precessing: ", fpdb )
+        print("## rank ", rank, " ## is precessing: ", fpdb, " ## PDB: ", pdb_lines[105:160])
         
         if rank==0: 
             print("## keys inside sfall_cluster: ", sfall_cluster.keys())
@@ -335,7 +335,7 @@ if __name__=="__main__":
 
                 fsave = save_folder + "/" + str(idx_img_pdb).zfill(6) + ".img"
                 
-                print("## rank ", rank, " is processing ", idx_pdb, " number: ", idx_img_pdb, " counted as: ", idx_img_all)
+                print("## rank ", rank, " is processing ", idx_pdb, " number: ", idx_img_pdb, " counted as: ", idx_img_all, " ## PDB: ", pdb_lines[105:160])
 
                 if os.path.isfile(fsave) or os.path.isfile(fsave+".gz"):
                     print("@@ file exists: ", fsave)
@@ -349,7 +349,7 @@ if __name__=="__main__":
                 rand_ori = sqr(random_orientation)
                 # print("## rank ", rank, " ## random orientations = ", random_orientation)
                 # print(rank, " ## random ori = ", rand_ori)
-                run_sim2smv(simparams=simparams,pdb_lines=pdb_lines,crystal=transmitted_info["crystal"],\
+                run_sim2smv(img_prefix="PDB_"+str(idx_pdb).zfill(3),simparams=simparams,pdb_lines=pdb_lines,crystal=transmitted_info["crystal"],\
                         spectra=iterator,rotation=rand_ori,rank=rank,fsave=fsave,sfall_cluster=sfall_cluster,quick=simparams.quick)
                 #run_sim2smv(prefix=simparams.prefix, crystal=transmitted_info["crystal"],spectra=iterator,rotation=rand_ori,\
                 #            simparams=simparams,sfall_cluster=sfall_cluster,rank=rank,quick=simparams.quick)

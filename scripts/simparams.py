@@ -6,7 +6,7 @@ quick = False                         ##################
 
 
 ## nanoBragg params
-add_spots_algorithm = "JH"            ##################
+add_spots_algorithm = "cuda"            ##################
 fmodel_algorithm = "fft"
 direct_algo_res_limit = 1.3
 oversample = 1
@@ -53,9 +53,9 @@ detector_psf_fwhm_mm = 0.11
 
 ## user params
 prefix = "lao"            
-num_pdbs = 1                                                                                         ##################
+num_pdbs = 150                                                                                         ##################
 pdb_files = [ os.path.abspath( "./PDBs/lao_"+str(ii).zfill(3)+".pdb" ) for ii in range(num_pdbs) ]   ##################
-num_img = [20] * len(pdb_files)                                                                       ##################
+num_img = [10000] * len(pdb_files)                                                                       ##################
 
 
 

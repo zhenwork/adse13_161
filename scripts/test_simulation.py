@@ -29,12 +29,16 @@ ls49_big_data = os.environ["LS49_BIG_DATA"] # get absolute path from environment
 step4_pad.big_data = ls49_big_data
 
 
-import test_simparams as simparams
+import simparams as simparams
 from LS49.sim.step4_pad import microcrystal
 from cctbx import crystal_orientation
 
 
-
+#################################
+simparams.num_pdbs = 1     
+simparams.pdb_files = simparams.pdb_files[:1] 
+simparams.num_img = [100] 
+#################################
 
 
 def data(fpdb):
@@ -46,7 +50,7 @@ def data(fpdb):
 def channel_pixels(simparams=None,single_wavelength_A=None,single_flux=None,N=None,UMAT_nm=None, \
                 Amatrix_rot=None,sfall_channel=None,rank=None):
     
-    print("## inside channel wavlength/flux = ", single_wavelength_A, single_flux/simparams.flux)
+    # print("## inside channel wavlength/flux = ", single_wavelength_A, single_flux/simparams.flux)
 
     SIM = nanoBragg(detpixels_slowfast=(simparams.detector_size_ny,simparams.detector_size_nx),pixel_size_mm=simparams.pixel_size_mm,\
                 Ncells_abc=(N,N,N),wavelength_A=single_wavelength_A,verbose=0)
@@ -56,6 +60,11 @@ def channel_pixels(simparams=None,single_wavelength_A=None,single_flux=None,N=No
     SIM.mosaic_domains = simparams.mosaic_domains      # 77 seconds.    With 100 energy points, 7700 seconds (2 hours) per image
     SIM.distance_mm=simparams.distance_mm
     SIM.set_mosaic_blocks(UMAT_nm)
+
+    ######################
+    SIM.beamcenter_convention=convention.ADXV
+    SIM.beam_center_mm=(simparams.beam_center_x_mm, simparams.beam_center_y_mm)  # 95.975 96.855
+    ######################
 
     # get same noise each time this test is run
     SIM.seed = 0
@@ -75,11 +84,7 @@ def channel_pixels(simparams=None,single_wavelength_A=None,single_flux=None,N=No
     temp=SIM.Ncells_abc
     SIM.Ncells_abc=temp
 
-    ######################
-    SIM.beamcenter_convention=convention.ADXV
-    SIM.beam_center_mm=(simparams.beam_center_x_mm, simparams.beam_center_y_mm)  # 95.975 96.855
-    ######################
-
+    # SIM.show_params()
 
     add_spots_algorithm = simparams.add_spots_algorithm
 
@@ -101,7 +106,7 @@ def channel_pixels(simparams=None,single_wavelength_A=None,single_flux=None,N=No
 from LS49.sim.debug_utils import channel_extractor
 CHDBG_singleton = channel_extractor()
 
-def run_sim2smv(simparams=None,pdb_lines=None,crystal=None,spectra=None,rotation=None,rank=None,fsave=None,sfall_cluster=None,quick=False):
+def run_sim2smv(img_prefix=None, simparams=None,pdb_lines=None,crystal=None,spectra=None,rotation=None,rank=None,fsave=None,sfall_cluster=None,quick=False):
     smv_fileout = fsave
 
     direct_algo_res_limit = simparams.direct_algo_res_limit
@@ -109,20 +114,19 @@ def run_sim2smv(simparams=None,pdb_lines=None,crystal=None,spectra=None,rotation
     wavlen, flux, real_wavelength_A = next(spectra) # list of lambdas, list of fluxes, average wavelength
     real_flux = flex.sum(flux)
     assert real_wavelength_A > 0
-    print(rank, " ## real_wavelength_A/real_flux = ", real_wavelength_A, real_flux*1.0/simparams.flux)
+    # print(rank, " ## real_wavelength_A/real_flux = ", real_wavelength_A, real_flux*1.0/simparams.flux)
 
     if quick:
         wavlen = flex.double([real_wavelength_A])
         flux = flex.double([real_flux])
 
-    print("## pdb_lines[100] = ", pdb_lines[100:110])
-    GF = gen_fmodel(resolution=simparams.direct_algo_res_limit,pdb_text=pdb_lines,algorithm=simparams.fmodel_algorithm,wavelength=real_wavelength_A)
-    GF.set_k_sol(simparams.k_sol)
-    #GF.make_P1_primitive()
-    sfall_main = GF.get_amplitudes()
+    # GF = gen_fmodel(resolution=simparams.direct_algo_res_limit,pdb_text=pdb_lines,algorithm=simparams.fmodel_algorithm,wavelength=real_wavelength_A)
+    # GF.set_k_sol(simparams.k_sol) 
+    # GF.make_P1_primitive()
+    sfall_main = sfall_cluster["main"] #GF.get_amplitudes() 
 
     # use crystal structure to initialize Fhkl array
-    sfall_main.show_summary(prefix = "Amplitudes used ")
+    # sfall_main.show_summary(prefix = "Amplitudes used ")
     N = crystal.number_of_cells(sfall_main.unit_cell())
 
     #print("## number of N = ", N)
@@ -152,6 +156,10 @@ def run_sim2smv(simparams=None,pdb_lines=None,crystal=None,spectra=None,rotation
         UMAT_nm.append( site.axis_and_angle_as_r3_rotation_matrix(m,deg=False) )
     SIM.set_mosaic_blocks(UMAT_nm)
 
+    ######################
+    SIM.beamcenter_convention=convention.ADXV
+    SIM.beam_center_mm=(simparams.beam_center_x_mm, simparams.beam_center_y_mm)  # 95.975 96.855
+    ######################
 
     # get same noise each time this test is run
     SIM.seed = 0
@@ -168,12 +176,12 @@ def run_sim2smv(simparams=None,pdb_lines=None,crystal=None,spectra=None,rotation
 
     SIM.Amatrix_RUB = Amatrix_rot
     #workaround for failing init_cell, use custom written Amatrix setter
+    # print("## inside run_sim2smv, Amat_rot = ", Amatrix_rot)
     
     Amat = sqr(SIM.Amatrix).transpose() # recovered Amatrix from SIM
     
     Ori = crystal_orientation.crystal_orientation(Amat, crystal_orientation.basis_type.reciprocal)
     
-
     SIM.xtal_shape=shapetype.Gauss # both crystal & RLP are Gaussian
 
     SIM.progress_meter=False
@@ -187,25 +195,21 @@ def run_sim2smv(simparams=None,pdb_lines=None,crystal=None,spectra=None,rotation
     temp=SIM.Ncells_abc
     SIM.Ncells_abc=temp
     
-    ######################
-    SIM.beamcenter_convention=convention.ADXV
-    SIM.beam_center_mm=(simparams.beam_center_x_mm, simparams.beam_center_y_mm)  # 95.975 96.855
-    ######################
 
-    print("## domains_per_crystal = ", crystal.domains_per_crystal)
+    # print("## domains_per_crystal = ", crystal.domains_per_crystal)
     SIM.raw_pixels *= crystal.domains_per_crystal # must calculate the correct scale!
 
-    print("## Initial raw_pixels = ", flex.sum(SIM.raw_pixels))
+    # print("## Initial raw_pixels = ", flex.sum(SIM.raw_pixels))
 
     for x in range(len(flux)):
         # CH = channel_pixels(wavlen[x],flux[x],N,UMAT_nm,Amatrix_rot,sfall_cluster[x],rank)
-        print("## in loop wavlen/flux/real_wavelength_A = ", wavlen[x], flux[x]/real_flux, real_wavelength_A)
+        # print("## in loop wavlen/flux/real_wavelength_A = ", wavlen[x], flux[x]/real_flux, real_wavelength_A)
         CH = channel_pixels(simparams=simparams,single_wavelength_A=wavlen[x],single_flux=flux[x],N=N,UMAT_nm=UMAT_nm, \
                 Amatrix_rot=Amatrix_rot,sfall_channel=sfall_cluster[x],rank=rank)
         SIM.raw_pixels += CH.raw_pixels * crystal.domains_per_crystal
         CHDBG_singleton.extract(channel_no=x, data=CH.raw_pixels)
         CH.free_all()
-        print("## sum raw_pixels after ", x, "is", flex.sum(SIM.raw_pixels))
+        # print("## sum raw_pixels after ", x, "is", flex.sum(SIM.raw_pixels))
 
         
     # rough approximation to water: interpolation points for sin(theta/lambda) vs structure factor
@@ -234,11 +238,11 @@ def run_sim2smv(simparams=None,pdb_lines=None,crystal=None,spectra=None,rotation
     SIM.detector_psf_kernel_radius_pixels=simparams.detector_psf_kernel_radius_pixels
     SIM.detector_psf_type=shapetype.Unknown # for CSPAD
     SIM.detector_psf_fwhm_mm=simparams.detector_psf_fwhm_mm
-    #SIM.apply_psf()
+    SIM.apply_psf()
 
     SIM.add_noise() 
 
-    extra = "PREFIX=%s;\nRANK=%d;\n"%(simparams.prefix,rank)
+    extra = "PREFIX=%s;\nRANK=%d;\n"%(img_prefix,rank)
     SIM.to_smv_format_py(fileout=smv_fileout,intfile_scale=1,rotmat=True,extra=extra,gz=True)
     SIM.free_all()
 
@@ -250,7 +254,9 @@ def sfall_prepare(simparams=None, fpdb=None, spectra=None):
     fmodel_generator = gen_fmodel(resolution=simparams.direct_algo_res_limit,\
                     pdb_text=data(fpdb).get("pdb_lines"), algorithm=simparams.fmodel_algorithm, wavelength=simparams.wavelength_A)
     fmodel_generator.set_k_sol(simparams.k_sol)
-    #fmodel_generator.make_P1_primitive()
+    fmodel_generator.make_P1_primitive()
+
+    sfall_cluster["main"] = fmodel_generator.get_amplitudes().copy()
 
     if simparams.quick:
         sfall_cluster[0] = fmodel_generator.get_amplitudes().copy()
@@ -293,7 +299,8 @@ if __name__=="__main__":
         random_orientations = []
         for iteration in range( sum(simparams.num_img) ):
             random_orientations.append( mt.random_double_r3_rotation_matrix() )
-            
+        
+        # for ii in range(10): print("## TOP 10 orientations = ", random_orientations[ii])
         print("## total orientations = ", len(random_orientations))
         transmitted_info = dict(spectra = SS, crystal = C, random_orientations = random_orientations)
 
@@ -314,12 +321,17 @@ if __name__=="__main__":
     for idx_pdb in range( len(simparams.pdb_files) ):
 
         fpdb = simparams.pdb_files[idx_pdb]
-
+        
         sfall_cluster = None
         sfall_cluster = sfall_prepare(simparams=simparams, fpdb=fpdb, spectra = transmitted_info["spectra"])
         pdb_lines = None
         pdb_lines = data(fpdb).get("pdb_lines")
         save_folder = "./" + simparams.prefix + "_" + str(idx_pdb).zfill(3)
+
+        print("## rank ", rank, " ## is precessing: ", fpdb, " ## PDB: ", pdb_lines[105:160])
+        
+        if rank==0: 
+            print("## keys inside sfall_cluster: ", sfall_cluster.keys())
 
         for idx_img_pdb in range(simparams.num_img[idx_pdb]):
 
@@ -329,11 +341,7 @@ if __name__=="__main__":
 
                 fsave = save_folder + "/" + str(idx_img_pdb).zfill(6) + ".img"
                 
-                print(rank, " ## idx_pdb = ", idx_pdb)
-                print(rank, " ## fpdb = ", fpdb)
-                print(rank, " ## idx_img_pdb = ", idx_img_pdb)
-                print(rank, " ## idx_img_all = ", idx_img_all)
-                print(rank, " ## fsave = ", fsave)
+                print("## rank ", rank, " is processing ", idx_pdb, " number: ", idx_img_pdb, " counted as: ", idx_img_all, " ## PDB: ", pdb_lines[105:160])
 
                 if os.path.isfile(fsave) or os.path.isfile(fsave+".gz"):
                     print("@@ file exists: ", fsave)
@@ -345,9 +353,9 @@ if __name__=="__main__":
 
                 random_orientation=transmitted_info["random_orientations"][idx_img_all]
                 rand_ori = sqr(random_orientation)
-                #print(rank, " ## random orientations = ", random_orientation)
-                #print(rank, " ## random ori = ", rand_ori)
-                run_sim2smv(simparams=simparams,pdb_lines=pdb_lines,crystal=transmitted_info["crystal"],\
+                # print("## rank ", rank, " ## random orientations = ", random_orientation)
+                # print(rank, " ## random ori = ", rand_ori)
+                run_sim2smv(img_prefix="PDB_"+str(idx_pdb).zfill(3),simparams=simparams,pdb_lines=pdb_lines,crystal=transmitted_info["crystal"],\
                         spectra=iterator,rotation=rand_ori,rank=rank,fsave=fsave,sfall_cluster=sfall_cluster,quick=simparams.quick)
                 #run_sim2smv(prefix=simparams.prefix, crystal=transmitted_info["crystal"],spectra=iterator,rotation=rand_ori,\
                 #            simparams=simparams,sfall_cluster=sfall_cluster,rank=rank,quick=simparams.quick)
