@@ -35,8 +35,6 @@ from cctbx import crystal_orientation
 
 
 
-
-
 def data(fpdb):
     return dict(
         pdb_lines = open(fpdb,"r").read()
@@ -116,13 +114,10 @@ def run_sim2smv(simparams=None,pdb_lines=None,crystal=None,spectra=None,rotation
         wavlen = flex.double([real_wavelength_A])
         flux = flex.double([real_flux])
 
-    # print("## pdb_lines[100] = ", pdb_lines[100:110])
     # GF = gen_fmodel(resolution=simparams.direct_algo_res_limit,pdb_text=pdb_lines,algorithm=simparams.fmodel_algorithm,wavelength=real_wavelength_A)
-    # GF.set_k_sol(simparams.k_sol)
-    # print("## before  primitive: ", GF.get_amplitudes())
+    # GF.set_k_sol(simparams.k_sol) 
     # GF.make_P1_primitive()
-    sfall_main = sfall_cluster["main"] #GF.get_amplitudes()
-    # print("## after  primitive: ", GF.get_amplitudes())
+    sfall_main = sfall_cluster["main"] #GF.get_amplitudes() 
 
     # use crystal structure to initialize Fhkl array
     # sfall_main.show_summary(prefix = "Amplitudes used ")
@@ -181,7 +176,6 @@ def run_sim2smv(simparams=None,pdb_lines=None,crystal=None,spectra=None,rotation
     
     Ori = crystal_orientation.crystal_orientation(Amat, crystal_orientation.basis_type.reciprocal)
     
-
     SIM.xtal_shape=shapetype.Gauss # both crystal & RLP are Gaussian
 
     SIM.progress_meter=False
@@ -196,8 +190,7 @@ def run_sim2smv(simparams=None,pdb_lines=None,crystal=None,spectra=None,rotation
     SIM.Ncells_abc=temp
     
 
-
-    print("## domains_per_crystal = ", crystal.domains_per_crystal)
+    # print("## domains_per_crystal = ", crystal.domains_per_crystal)
     SIM.raw_pixels *= crystal.domains_per_crystal # must calculate the correct scale!
 
     # print("## Initial raw_pixels = ", flex.sum(SIM.raw_pixels))
@@ -322,12 +315,17 @@ if __name__=="__main__":
     for idx_pdb in range( len(simparams.pdb_files) ):
 
         fpdb = simparams.pdb_files[idx_pdb]
-        print(rank, " ## preparing sfall for: ", fpdb)
+        
         sfall_cluster = None
         sfall_cluster = sfall_prepare(simparams=simparams, fpdb=fpdb, spectra = transmitted_info["spectra"])
         pdb_lines = None
         pdb_lines = data(fpdb).get("pdb_lines")
         save_folder = "./" + simparams.prefix + "_" + str(idx_pdb).zfill(3)
+
+        print("## rank ", rank, " ## is precessing: ", fpdb )
+        
+        if rank==0: 
+            print("## keys inside sfall_cluster: ", sfall_cluster.keys())
 
         for idx_img_pdb in range(simparams.num_img[idx_pdb]):
 
@@ -337,11 +335,7 @@ if __name__=="__main__":
 
                 fsave = save_folder + "/" + str(idx_img_pdb).zfill(6) + ".img"
                 
-                #print(rank, " ## idx_pdb = ", idx_pdb)
-                #print(rank, " ## fpdb = ", fpdb)
-                #print(rank, " ## idx_img_pdb = ", idx_img_pdb)
-                #print(rank, " ## idx_img_all = ", idx_img_all)
-                #print(rank, " ## fsave = ", fsave)
+                print("## rank ", rank, " is processing ", idx_pdb, " number: ", idx_img_pdb, " counted as: ", idx_img_all)
 
                 if os.path.isfile(fsave) or os.path.isfile(fsave+".gz"):
                     print("@@ file exists: ", fsave)

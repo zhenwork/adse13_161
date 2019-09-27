@@ -17,12 +17,12 @@ default_F = 0
 mosaic_spread_deg = 0.05
 mosaic_domains = 25 
 length_um = 10.
-Deff_A = 1500
+Deff_A = 1700
 k_sol = 0.435
 
 
 ## background params
-water_sample_thick_mm = 100.0e-3
+water_sample_thick_mm = 50.0e-3
 water_density_gcm3 = 1
 water_molecular_weight_Da = 18
 air_sample_thick_mm = 100.0
@@ -55,7 +55,7 @@ detector_psf_fwhm_mm = 0.11
 prefix = "lao"            
 num_pdbs = 2                                                                                         ##################
 pdb_files = [ os.path.abspath( "./PDBs/lao_"+str(ii).zfill(3)+".pdb" ) for ii in range(num_pdbs) ]   ##################
-num_img = [5] * len(pdb_files)                                                                       ##################
+num_img = [1] * len(pdb_files)                                                                       ##################
 
 
 
