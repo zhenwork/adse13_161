@@ -374,6 +374,9 @@ if __name__=="__main__":
 
             idx_img_all += 1 
 
+            if rank not in ranks_in_pdb[idx_pdb]:
+                continue
+
             if idx_img_pdb % size_in_pdb[idx_pdb] == rank_in_pdb[rank][idx_pdb]:
 
                 fsave = save_folder + "/" + str(idx_img_pdb).zfill(6) + ".img"
