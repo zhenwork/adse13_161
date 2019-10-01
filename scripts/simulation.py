@@ -267,6 +267,45 @@ def sfall_prepare(simparams=None, fpdb=None, spectra=None):
     return sfall_cluster
 
 
+def jobAssign(size, num_pdb, num_img):
+    
+    # rank_in_pdb[rank][idx_pdb] = 0
+    # size_in_pdb[idx_pdb] = 5
+    # ranks_in_pdb[idx_pdb] = [0,3,5]
+    # 
+    
+    rank_in_pdb = {}
+    size_in_pdb = {}
+    ranks_in_pdb = {}    
+
+    for ipdb in range(num_pdb):
+        size_in_pdb[ipdb] = 0
+        ranks_in_pdb[ipdb] = []
+    
+    if ipdb >= size:
+        for ipdb in range(num_pdb):
+            r =  ipdb % size
+            ranks_in_pdb[ipdb].append(r)
+            size_in_pdb[ipdb] += 1
+    else:
+        for r in range(size):
+            ipdb = r % num_pdb
+            ranks_in_pdb[ipdb].append(r)
+            size_in_pdb[ipdb] += 1
+        
+    for r in range(size):
+        rank_in_pdb[r] = {}
+    
+    for ipdb in range(num_pdb):
+        tmp_r = 0
+        for r in ranks_in_pdb[ipdb]:
+            rank_in_pdb[r][ipdb] = tmp_r
+            tmp_r += 1
+        
+    return rank_in_pdb, size_in_pdb, ranks_in_pdb
+
+
+
 if __name__=="__main__":
 
     from mpi4py import MPI
@@ -278,6 +317,11 @@ if __name__=="__main__":
     omptbx.omp_set_num_threads(workaround_nt)
     print("## hello from rank %d of %d"%(rank,size),"with omp_threads=",omp_get_num_procs())
     
+
+    ## assign jobs
+    rank_in_pdb, size_in_pdb, ranks_in_pdb = jobAssign(size=size, num_pdb=simparams.num_pdbs, num_img=simparams.num_img[0])
+
+
     import datetime
     start_elapse = time.time()
 
@@ -317,21 +361,20 @@ if __name__=="__main__":
         fpdb = simparams.pdb_files[idx_pdb]
         
         sfall_cluster = None
-        sfall_cluster = sfall_prepare(simparams=simparams, fpdb=fpdb, spectra = transmitted_info["spectra"])
         pdb_lines = None
-        pdb_lines = data(fpdb).get("pdb_lines")
-        save_folder = "./" + simparams.prefix + "_" + str(idx_pdb).zfill(3)
 
-        print("## rank ", rank, " ## is precessing: ", fpdb, " ## PDB: ", pdb_lines[105:160])
-        
-        if rank==0: 
-            print("## keys inside sfall_cluster: ", sfall_cluster.keys())
+        if rank in ranks_in_pdb[idx_pdb]:
+            sfall_cluster = sfall_prepare(simparams=simparams, fpdb=fpdb, spectra = transmitted_info["spectra"])
+            pdb_lines = data(fpdb).get("pdb_lines")
+            save_folder = "./" + simparams.prefix + "_" + str(idx_pdb).zfill(3)
+
+            print("## rank ", rank, " ## is precessing: ", fpdb, " ## PDB: ", pdb_lines[105:160])
 
         for idx_img_pdb in range(simparams.num_img[idx_pdb]):
 
             idx_img_all += 1 
 
-            if idx_img_pdb % size == rank:
+            if idx_img_pdb % size_in_pdb[idx_pdb] == rank_in_pdb[rank][idx_pdb]:
 
                 fsave = save_folder + "/" + str(idx_img_pdb).zfill(6) + ".img"
                 
