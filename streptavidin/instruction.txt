@@ -1,0 +1,46 @@
+### STEP 1: Get environment
+    - "Instruction from Iris"
+    source $PROJWORK/chm137/iris/adse13_196/LS49/cctbx_deployment/opt/activate.sh
+    module load cuda
+    module load gcc/7.4.0
+    module load cmake/3.17.3
+    module load git
+
+### STEP 2: Go to memberwork folder (don't use home folder)
+
+    cd $MEMBERWORK/chm137
+
+### STEP 3: Git clone
+
+    git clone https://github.com/zhenwork/adse13_161.git
+
+### STEP 4: Go to the git folder
+
+    cd adse13_161/streptavidin/
+
+### STEP 5: Run test_simulation.py
+
+    - "You can submit a small job (see below) or run interactively"
+    #BSUB -nnodes 2
+    jsrun -n12 -a7 -c7 -g1 libtbx.python test_simulation.py
+
+
+### STEP 6: Check result of test_simulation
+    
+    After the test_simulation is done
+    make sure you see a folder "test_strep"
+    make sure there are 50 images inside the folder
+
+### STEP 7: run simulation.py
+
+    #BSUB -nnodes 50
+    jsrun -n300 -a7 -c7 -g1 libtbx.python simulation.py
+
+### STEP 8: copy files to psana
+
+    (1) open nomachine and psana
+    (2) ssh psexport
+    (3) cd /reg/data/ana03/scratch/simulation
+    (4) scp -r username@summit.olcf.ornl.gov:/path/to/adse13_161/streptavidin ./
+    (5) Press "Close" of nomachine and press "Disconnect"
+    (6) go to sleep
