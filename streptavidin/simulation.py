@@ -39,7 +39,7 @@ from cctbx import crystal_orientation
 simparams.prefix = "strep"     
 simparams.num_pdbs = 1
 simparams.pdb_files = ["./strep/strep_000.pdb"] 
-simparams.num_img = [30000] 
+simparams.num_img = [300000] 
 #################################
 
 
@@ -343,6 +343,10 @@ if __name__=="__main__":
 
         mt = flex.mersenne_twister(seed=0)
         random_orientations = []
+        ###############################################################
+        for pre_rool in range(30000):
+            mt.random_double_r3_rotation_matrix()
+        ###############################################################
         for iteration in range( sum(simparams.num_img) ):
             random_orientations.append( mt.random_double_r3_rotation_matrix() )
         

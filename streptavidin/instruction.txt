@@ -33,8 +33,8 @@
 
 ### STEP 7: run simulation.py
 
-    #BSUB -nnodes 50
-    jsrun -n300 -a7 -c7 -g1 libtbx.python simulation.py
+    #BSUB -nnodes 200
+    jsrun -n1200 -a7 -c7 -g1 libtbx.python simulation.py
 
 ### STEP 8: copy files to psana
 
